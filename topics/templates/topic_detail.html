@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load blog_extras %}
+{% load static %}
+{% load widget_tweaks %}
+{% load custom_filters %}
+
+{% block content %}
+<div>
+   <div class=" p-5 mt-20 mb-[30rem] mx-auto font-inter lg:w-[75%]">
+         <div >
+            {% if request.user.is_authenticated %}
+            {% if request.user == topic.author %}
+            <button id="nikon-d850-dropdown-button" data-dropdown-toggle="nikon-d850-dropdown" class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
+               <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+               </svg>
+            </button>
+            <div id="nikon-d850-dropdown" class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
+                  <ul class="py-1 text-sm" aria-labelledby="nikon-d850-dropdown-button">
+                     <li>
+                        <a href="{% url 'topic_update' topic.id %}"  class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
+                              <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                 <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                              </svg>
+                           Edit
+                        </a>
+                     </li>
+                  
+                     <li class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 w-full dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100">
+                        <a href="{% url 'topic_delete' topic.id %}"
+                        class="flex w-full items-center py-1 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200"
+                        >Delete</a>
+                  </li>
+                  
+                  
+                  </ul>
+               </div>
+               {% endif %}
+               {% endif %}
+         </div>
+
+         <div >
+            <h1 class="mb-4 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-4xl dark:text-white">Best
+               practices {{ topic.title }}s</h1>
+            <img class="object-cover lg:mt-6 object-center w-full h-64 lg:h-[30rem] " src="{{ topic.image.url }}"
+               alt="{{ topic.title }} Image">
+
+            <div class="text-gray-500 text-sm lg:text-md flex justify-between mt-5 ">
+               <div class="mt-5 flex gap-3">
+                  <div class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
+                     <img class="mr-4 w-16 h-16 rounded-full" src="{{ topic.author.profile.image.url }}">
+                     <div>
+                        <a href="#" rel="author" class="text-xl font-bold text-gray-900 dark:text-white">{{ topic.author}}</a>
+                        <p class="text-base text-gray-500 dark:text-gray-400">Graphic Designer, educator & CEO Flowbite</p>
+                        <p class="text-base text-gray-500 dark:text-gray-400"><time pubdate datetime="2022-02-08"
+                              title="February 8th, 2022">{{ topic.published_at|date:"F j, Y" }}</time></p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+            <p class="mt-9 font-light lg:text-[1.2rem] text-sm leading-8">
+               {{ topic.content|convert_markdown|safe }}
+            </p>
+         </div>
+   </div>
+
+
+   <!--  COMMENT FORM AND SECTION -->
+   <section class="border-t comment section" id="commentSection">
+         <section class="bg-white dark:bg-gray-900 py-8 lg:py-16 antialiased">
+            <div class="max-w-2xl mx-auto px-4">
+               <div class="flex justify-between items-center mb-6">
+                  <h2 class="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">Discussion  
+                     <button >
+                        <i class="fa fa-comments-o" aria-hidden="true"></i>
+                     </button>
+                  </h2>
+                     <button id="commentToggleBtn" class="bg-blue-600 hover:bg-blue-500 p-2 text-sm text-white rounded-md">
+                        Comment
+                     </button></h2>
+            </div>
+            <form method="post" action="{% url 'topic_detail' pk=topic.id %}" id="commentForm" >
+               {% csrf_token %}
+               {% if request.user.is_authenticated %}
+                  <div class="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                     <label for="comment" class="sr-only">Your comment</label>
+                     <textarea name="body" id="comment" rows="4" class="form-control px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800" placeholder="Write a comment...">{{ comment_form.body.value }}</textarea>
+                  </div>
+                  
+                     <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-sm text-white py-2 px-3 rounded-md">
+                        Post comment
+                     </button>
+                     
+                  {% endif %}
+            </form>
+            
+            {% if comments %}
+               <article id="commentsContainer" class=" flex flex-col gap-9 mt-5 text-base bg-white rounded-lg dark:bg-gray-900">
+                  {% for comment in comments %}
+                        <div class="border-b py-5 pl-2 border-gray-400">
+                        <footer class="flex justify-between items-center mb-2">
+                           <div class="flex items-center">
+                              <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold"><img
+                                       class="mr-2 w-6 h-6 rounded-full"
+                                       src="{{ comment.author.profile.image.url }}"
+                                       alt="Michael Gough">{{ comment.author.username }}</p>
+                              <p class="text-sm text-gray-600 dark:text-gray-400"><time pubdate datetime="2022-02-08"
+                                       title="February 8th, 2022">{{ comment.created }}</time></p>
+                           </div>
+                           <button id="dropdownComment1Button" data-dropdown-toggle="dropdownComment1"
+                              class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                              type="button">
+                              <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
+                                    <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
+                              </svg>
+                              <span class="sr-only">Comment settings</span>
+                           </button>
+                           <!-- Dropdown menu -->
+                           <div id="dropdownComment1"
+                              class="hidden z-10 w-36 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
+                              <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
+                                    aria-labelledby="dropdownMenuIconHorizontalButton">
+                                    <li>
+                                       <a href="#"
+                                          class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
+                                    </li>
+                                    <li>
+                                       <a href="#"
+                                          class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Remove</a>
+                                    </li>
+                                    <li>
+                                       <a href="#"
+                                          class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Report</a>
+                                    </li>
+                              </ul>
+                           </div>
+                        </footer>
+                        <p class="text-gray-500 dark:text-gray-400">{{ comment.body|format_content:exclude_wysiwyg|safe }}</p>
+
+                        </div> 
+                     {% endfor %}
+               </article>
+            {% endif %}
+            
+            </div>
+         </section>
+   </section>
+
+   <script>
+      // Get references to the button, form, comments container, and section
+      var commentToggleBtn = document.getElementById('commentToggleBtn');
+      var commentForm = document.getElementById('commentForm');
+      var commentsContainer = document.getElementById('commentsContainer');
+      var commentSection = document.getElementById('commentSection');
+   
+      // Initial state: comment form and comments are hidden
+      commentForm.style.display = 'none';
+      commentsContainer.style.display = 'none';
+   
+      // Toggle function
+      function toggleCommentsAndForm() {
+         if (commentForm.style.display === 'none' && commentsContainer.style.display === 'none') {
+            commentForm.style.display = 'block';
+            commentsContainer.style.display = 'block';
+         } else {
+            commentForm.style.display = 'none';
+            commentsContainer.style.display = 'none';
+         }
+      }
+   
+      // Attach the toggle function to the button click event
+      commentToggleBtn.addEventListener('click', toggleCommentsAndForm);
+   </script>
+   
+</div>
+
+
+{% endblock %}

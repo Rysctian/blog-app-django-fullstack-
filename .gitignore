@@ -1,0 +1,54 @@
+# Virtual environment
+venv/
+*.venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django database
+db.sqlite3
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs and temporary files
+logs/
+*.log
+*.swp
+
+# User-specific files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Dependency directories
+dist/
+build/
+*.egg-info/
+
+# Compiled Python files
+*.pyc
+*.pyo
+*.pyd
+
+# Database files
+*.db
+*.sqlite3
+
+
+
+# Local development settings
+local_settings.py
+
+
+# Node.js related files (modify as needed)
+node_modules/
+package-lock.json
