@@ -1,2 +1,2 @@
 # A full stack Django Blog App
-- functionality of a usual blog application or a social media app
+- one of my first fullstack project
